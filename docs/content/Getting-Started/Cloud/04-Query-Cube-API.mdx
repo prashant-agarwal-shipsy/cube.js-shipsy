@@ -1,0 +1,121 @@
+---
+title: Query Cube
+permalink: /getting-started/cloud/query-cube
+category: Getting Started
+subCategory: Cube Cloud
+menuOrder: 5
+isDisableFeedbackBlock: true
+---
+
+## Developer Playground
+
+The Playground is a web-based tool that allows you to query your Cube data
+without writing any code. It's a great way to get started with Cube and explore
+your data.
+
+To open the Playground, open the **Playground** page in Cube Cloud:
+
+<div style="text-align: center">
+  <img
+    alt="Cube Cloud Deployment Developer Playground Screen"
+    src="https://ucarecdn.com/43394d9a-a309-46a1-952d-ccbce10078aa/"
+    style="border: none"
+    width="80%"
+  />
+</div>
+
+Next, you will select the measures and dimensions you want to query, and then
+run the query. Let's do this for the `Orders` cube you generated in the previous
+step.
+
+Click **+ Measure** to display the available measures and add `Orders.count`,
+then click **+ Dimension** for available dimensions and add `Orders.status`.
+
+<div style="text-align: center">
+  <img
+    alt="Cube Cloud Deployment Developer Playground Screen with selected measures and dimensions"
+    src="https://ucarecdn.com/93ac3dd2-427a-4453-bd2d-38939ff6883f/"
+    style="border: none"
+    width="80%"
+  />
+</div>
+
+Finally, click the **Run** button to execute the query:
+
+<div style="text-align: center">
+  <img
+    alt="Cube Cloud Deployment Developer Playground Screen showing query results"
+    src="https://ucarecdn.com/d2210bb7-a35e-4da7-ba29-447da24cc06d/"
+    style="border: none"
+    width="80%"
+  />
+</div>
+
+## GraphQL API
+
+From the deployment's Overview page, you can copy the GraphQL API URL for the
+deployment:
+
+<div style="text-align: center">
+  <img
+    alt="Cube Cloud Deployment Overview Screen"
+    src="https://ucarecdn.com/7fa603ae-6100-4492-91e4-564d311f701e/"
+    style="border: none"
+    width="80%"
+  />
+</div>
+
+To see an example of how to query the GraphQL API using cURL, click **How to
+connect your application**:
+
+<div style="text-align: center">
+  <img
+    alt="Cube Cloud Deployment Screen with How to connect your application over GraphQL dialog open"
+    src="https://ucarecdn.com/4a153b5d-f746-451b-8c93-ab7891d98b47/"
+    style="border: none"
+    width="80%"
+  />
+</div>
+
+## REST API
+
+<div style="text-align: center">
+  <img
+    alt="Cube Cloud Deployment Overview Screen"
+    src="https://ucarecdn.com/7fa603ae-6100-4492-91e4-564d311f701e/"
+    style="border: none"
+    width="80%"
+  />
+</div>
+
+To see an example of how to query the REST API using cURL, click **How to
+connect your application**:
+
+<div style="text-align: center">
+  <img
+    alt="Cube Cloud Deployment Screen with How to connect your application over REST dialog open"
+    src="https://ucarecdn.com/30f90999-dd1b-495c-97c7-4656e61e65c1/"
+    style="border: none"
+    width="80%"
+  />
+</div>
+
+## SQL API
+
+On the Overview page, click **How to connect**, which will open a modal with
+instructions on different ways to connect to the SQL API. Navigate to the SQL
+API tab and enable the SQL API.
+
+Once it is enabled, you should see a screen like the one below with your
+connection credentials:
+
+<div style="text-align: center">
+  <img
+    src="https://ucarecdn.com/ffbaeb08-dfa5-4b64-b578-41206941f41b/"
+    style="border: none"
+    width="80%"
+  />
+</div>
+
+Since the Cube SQL API is Postgres-compatible, please make sure to select
+**Postgres** as the database type when connecting from BI tools.

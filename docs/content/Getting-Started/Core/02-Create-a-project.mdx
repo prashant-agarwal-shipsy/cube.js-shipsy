@@ -1,0 +1,102 @@
+---
+title: Create a project
+permalink: /getting-started/core/create-a-project
+category: Getting Started
+subCategory: Core
+menuOrder: 4
+isDisableFeedbackBlock: true
+---
+
+## Scaffold a project
+
+To create a new project, run the following command from your terminal:
+
+```bash
+npx cubejs-cli create my-first-cube-project
+```
+
+This command will create a new directory with the project name and install any
+necessary dependencies.
+
+## Start the development server
+
+From the newly-created project directory, run the following command to start
+Cube:
+
+```bash
+docker-compose up -d
+```
+
+## Connect a data source
+
+<InfoBox>
+
+Want to use a sample database instead? Use the credentials below:
+
+<br />
+
+| Field    | Value              |
+| -------- | ------------------ |
+| Host     | `demo-db.cube.dev` |
+| Port     | `5432`             |
+| Database | `ecom`             |
+| Username | `cube`             |
+| Password | `12345`            |
+
+</InfoBox>
+
+Head to [http://localhost:4000](http://localhost:4000) to open [Developer
+Playground][ref-devtools-playground].
+
+The [Developer Playground][ref-devtools-playground] has a database connection
+wizard that loads when Cube is first started up and no `.env` file is found.
+After database credentials have been set up, an `.env` file will automatically
+be created and populated with the same credentials.
+
+<div style="text-align: center">
+  <img
+    src="https://ucarecdn.com/9863faf0-4354-4ccd-828f-19500b7d9666/"
+    style="border: none"
+    width="80%"
+  />
+</div>
+
+Click on the type of database to connect to, and you'll be able to enter
+credentials:
+
+<div style="text-align: center">
+  <img
+    src="https://ucarecdn.com/d86ca1ca-046a-4f57-846d-f804a6ae047d/"
+    style="border: none"
+    width="80%"
+  />
+</div>
+
+After clicking Apply, you should see tables available to you from the configured
+database; select the `orders` table to generate a Cube model:
+
+<div style="text-align: center">
+  <img
+    src="https://ucarecdn.com/85dd345d-e9a0-402b-b882-500002e4856e/"
+    style="border: none"
+    width="80%"
+  />
+</div>
+
+After selecting the table, click **Generate Schema** and you should see the
+following:
+
+<div style="text-align: center">
+  <img
+    src="https://ucarecdn.com/9671e77c-5262-428a-8d78-479e9652c0bc/"
+    style="border: none"
+    width="80%"
+  />
+</div>
+
+Click **Build** on the dialog, which should take you to the **Build** page.
+
+In the next step, we'll learn how to
+[create a model from scratch](/getting-started/core/create-models).
+
+[ref-devtools-playground]: /dev-tools/dev-playground

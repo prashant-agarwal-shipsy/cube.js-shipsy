@@ -1,25 +1,34 @@
 ---
-title: Getting Started with Data Modeling
-menuTitle: Getting Started
-permalink: /schema/getting-started
-category: Reference
-menuOrder: 1
-proofread: 06/18/2019
+title: Create models
+permalink: /getting-started/core/create-models
+category: Getting Started
+subCategory: Core
+menuOrder: 5
+isDisableFeedbackBlock: true
 redirect_from:
+  - /schema/getting-started
   - /getting-started-cubejs-schema
 ---
 
 <InfoBox>
-  We're excited to expand the beta of YAML and Python support in Cube data modeling. <br />
-  Please <a href="https://forms.gle/4CZRRKK8nD4PvtxZA"> reach out to us </a> if you’d like to sign up for early access.
+  We're excited to expand the beta of YAML and Python support in Cube data
+  modeling. <br />
+  Please <a href="https://forms.gle/4CZRRKK8nD4PvtxZA">
+    {' '}
+    reach out to us{' '}
+  </a> if you’d like to sign up for early access.
 </InfoBox>
 
-A Cube Data Schema is used to model raw data into meaningful business
-definitions and pre-aggregate data for optimal results. The data schema is
-exposed through the [querying API][ref-backend-restapi] that allows end-users to
-query a wide variety of analytical queries without modifying the schema itself.
+A Cube model is used to translate raw data into meaningful business definitions
+and pre-aggregate data for optimal results. The model is exposed through the
+[querying API][ref-backend-restapi] that allows end-users to query a wide
+variety of analytical queries without modifying the model itself.
 
-Let’s use a users table with the following columns as an example:
+In the previous step, we connected Cube to our data source and generated models.
+Here, we'll learn how to create a model from scratch using the `users` table
+from the sample e-commerce dataset.
+
+Let’s look at a sample of the `users` table:
 
 | id  | paying | city          | company_name |
 | --- | ------ | ------------- | ------------ |
@@ -36,16 +45,16 @@ We can start with a set of simple questions about users we want to answer:
 - What is the percentage of paying users out of the total?
 - How many users, paying or not, are from different cities and companies?
 
-We don’t need to write SQL queries for every question, since the data schema
-allows building well-organized and reusable SQL.
+We don’t need to write SQL queries for every question, since the model allows
+building well-organized and reusable SQL.
 
-## 1. Creating a Cube
+## Create a Cube
 
-In Cube, [cubes][ref-schema-cube] are used to organize entities and
-connections between entities. Usually one cube is created for each table in the
-database, such as `users`, `orders`, `products`, etc. In the `sql` parameter of
-the cube we define a base table for this cube. In our case, the base table is
-simply our `users` table.
+In Cube, [cubes][ref-schema-cube] are used to organize entities and connections
+between entities. Usually one cube is created for each table in the database,
+such as `users`, `orders`, `products`, etc. In the `sql` parameter of the cube
+we define a base table for this cube. In our case, the base table is simply our
+`users` table.
 
 <CodeTabs>
 
@@ -63,7 +72,7 @@ cubes:
 
 </CodeTabs>
 
-## 2. Adding Measures and Dimensions
+## Add measures and dimensions
 
 Once the base table is defined, the next step is to add
 [measures][ref-schema-measures] and [dimensions][ref-schema-dimensions] to the
@@ -147,7 +156,7 @@ SELECT city, count(id) from users GROUP BY 1;
 You can add as many dimensions as you want to your query when you perform
 grouping.
 
-## 3. Adding Filters to Measures
+## Add filters to measures
 
 Now let's answer the next question – "How many paying users do we have?". To
 accomplish this, we will introduce **measure filters**:
@@ -207,10 +216,10 @@ FROM users
 
 Since the `filters` property is an array, you can apply as many filters as
 required. `paying_count` can be used with dimensions the same way as a simple
-`count`. We can group `paying_count` by `city` and `companyName` simply by adding
-these dimensions alongside measures in the requested query.
+`count`. We can group `paying_count` by `city` and `companyName` simply by
+adding these dimensions alongside measures in the requested query.
 
-## 4. Using Calculated Measures
+## Using calculated measures
 
 To answer "What is the percentage of paying users out of the total?", we need to
 calculate the paying users ratio, which is basically `paying_count / count`.
@@ -255,7 +264,7 @@ cubes:
         filters:
           - sql: "{CUBE}.paying = 'true'"
       - name: paying_percentage
-        sql: "100.0 * {paying_count} / {count}"
+        sql: '100.0 * {paying_count} / {count}'
         type: number
         format: percent
 ```
@@ -277,14 +286,11 @@ FROM users
 
 As with other measures, `paying_percentage` can be used with dimensions.
 
-## 5. Next Steps
-
-1. [Examples][ref-examples]
-2. [Query format][ref-backend-query-format]
-3. [REST API][ref-backend-restapi]
-4. [Schema reference documentation][ref-schema-cube]
+In the next step, we'll learn more about [how to query
+Cube][ref-getting-started-oss-query-cube].
 
 [ref-backend-restapi]: /rest-api
+[ref-getting-started-oss-query-cube]: /getting-started/core/query-cube-api
 [ref-schema-cube]: /schema/reference/cube
 [ref-schema-measures]: /schema/reference/measures
 [ref-schema-dimensions]: /schema/reference/dimensions
