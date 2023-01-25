@@ -1270,7 +1270,6 @@ impl DataGCLoop {
                         }
                     }
                     GCTask::DeleteChunks(chunk_ids) => {
-                        log::info!("Delete chunks: {}", chunk_ids.len());
                         match self.metastore.get_chunks_out_of_queue(chunk_ids).await {
                             Ok(chunks) => {
                                 let ids = chunks
@@ -1300,7 +1299,6 @@ impl DataGCLoop {
                                 );
                             }
                         }
-                        log::info!("Delete chunks completed");
                     }
                     GCTask::DeleteMiddleManPartition(partition_id) => {
                         if let Ok(true) = self
