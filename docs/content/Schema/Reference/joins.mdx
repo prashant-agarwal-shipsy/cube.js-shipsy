@@ -80,7 +80,7 @@ cubes:
     joins:
       - name: Products
         relationship: belongs_to
-        sql: '{CUBE.id} = {Products.order_id}'
+        sql: "{CUBE.id} = {Products.order_id}"
 ```
 
 </CodeTabs>
@@ -134,7 +134,7 @@ cubes:
     joins:
       - name: Profile
         relationship: has_one
-        sql: '{Users}.id = {Profile.user_id}'
+        sql: "{Users}.id = {Profile.user_id}"
 ```
 
 </CodeTabs>
