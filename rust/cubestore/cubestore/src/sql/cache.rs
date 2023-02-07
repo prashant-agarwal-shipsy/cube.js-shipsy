@@ -2,11 +2,15 @@ use crate::queryplanner::serialized_plan::SerializedPlan;
 use crate::sql::InlineTables;
 use crate::sql::SqlQueryContext;
 use crate::store::DataFrame;
+use crate::table::TableValue;
 use crate::{app_metrics, CubeError};
+use bincode::Options;
 use futures::Future;
 use log::trace;
+use moka::future::Cache;
 use std::collections::HashSet;
 use std::sync::Arc;
+use std::time::Duration;
 use tokio::sync::{watch, Mutex};
 
 #[derive(Clone, Hash, Eq, PartialEq, Debug)]
@@ -61,14 +65,39 @@ pub struct SqlResultCache {
     queue_cache: Mutex<
         lru::LruCache<SqlQueueCacheKey, watch::Receiver<Option<Result<Arc<DataFrame>, CubeError>>>>,
     >,
-    result_cache: Mutex<lru::LruCache<SqlResultCacheKey, Arc<DataFrame>>>,
+    result_cache: Cache<SqlResultCacheKey, Arc<DataFrame>>,
+}
+
+fn dataframe_sizeof(_: &SqlResultCacheKey, df: &Arc<DataFrame>) -> u32 {
+    let mut total = 0_u32;
+
+    for row in df.get_rows() {
+        for value in row.values() {
+            total += match value {
+                TableValue::Null => 8,
+                TableValue::String(v) => v.len() as u32,
+                TableValue::Int(_) => 8,
+                TableValue::Decimal(_) => 8,
+                TableValue::Float(_) => 8,
+                TableValue::Bytes(v) => v.len() as u32,
+                TableValue::Timestamp(_) => 8,
+                TableValue::Boolean(_) => 8,
+            };
+        }
+    }
+
+    total
 }
 
 impl SqlResultCache {
-    pub fn new(capacity: usize) -> Self {
+    pub fn new(capacity_bytes: u64, time_to_idle_secs: u64) -> Self {
+        let cache_builder = Cache::builder()
+            .max_capacity(capacity_bytes)
+            .time_to_idle(Duration::from_secs(time_to_idle_secs));
+
         Self {
-            queue_cache: Mutex::new(lru::LruCache::new(capacity)),
-            result_cache: Mutex::new(lru::LruCache::new(capacity)),
+            queue_cache: Mutex::new(lru::LruCache::new(1000)),
+            result_cache: cache_builder.weigher(dataframe_sizeof).build(),
         }
     }
 
@@ -90,13 +119,8 @@ impl SqlResultCache {
     {
         let inline_tables = &context.inline_tables;
         let result_key = SqlResultCacheKey::from_plan(query, inline_tables, &plan);
-        let cached_result = {
-            let mut result_cache = self.result_cache.lock().await;
-            result_cache.get(&result_key).cloned()
-        };
-        if let Some(result) = cached_result {
+        if let Some(result) = self.result_cache.get(&result_key) {
             app_metrics::DATA_QUERIES_CACHE_HIT.increment();
-
             trace!("Using result cache for '{}'", query);
             return Ok(result);
         }
@@ -126,9 +150,10 @@ impl SqlResultCache {
             }
             match &result {
                 Ok(r) => {
-                    let mut result_cache = self.result_cache.lock().await;
-                    if !result_cache.contains(&result_key) {
-                        result_cache.put(result_key.clone(), r.clone());
+                    if !self.result_cache.contains_key(&result_key) {
+                        self.result_cache
+                            .insert(result_key.clone(), r.clone())
+                            .await;
                         app_metrics::DATA_QUERIES_CACHE_SIZE.report(result_cache.len() as i64);
                     }
                 }

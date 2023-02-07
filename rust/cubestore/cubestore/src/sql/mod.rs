@@ -192,7 +192,8 @@ impl SqlServiceImpl {
         rows_per_chunk: usize,
         query_timeout: Duration,
         create_table_timeout: Duration,
-        max_cached_queries: usize,
+        query_cache_max_capacity_bytes: u64,
+        query_cache_time_to_idle_secs: u64,
     ) -> Arc<SqlServiceImpl> {
         Arc::new(SqlServiceImpl {
             db,
@@ -208,7 +209,10 @@ impl SqlServiceImpl {
             query_timeout,
             create_table_timeout,
             remote_fs,
-            cache: SqlResultCache::new(max_cached_queries),
+            cache: SqlResultCache::new(
+                query_cache_max_capacity_bytes,
+                query_cache_time_to_idle_secs,
+            ),
         })
     }
 
