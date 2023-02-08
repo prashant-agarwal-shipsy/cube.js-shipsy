@@ -146,7 +146,7 @@ cube(`Orders`, {
 
   joins: {
     Users: {
-      relationship: `belongsTo`,
+      relationship: `belongs_to`,
       sql: `${CUBE}.user_id = ${Users}.id`,
     },
   },
@@ -161,7 +161,7 @@ cube(`Orders`, {
     id: {
       sql: `id`,
       type: `number`,
-      primaryKey: true,
+      primary_key: true,
     },
 
     // this is proxy dimension
@@ -181,7 +181,7 @@ cube(`Users`, {
     id: {
       sql: `id`,
       type: `number`,
-      primaryKey: true,
+      primary_key: true,
     },
 
     city: {
