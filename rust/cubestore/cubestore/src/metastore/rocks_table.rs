@@ -293,9 +293,7 @@ where
                     let result = match self.table.get_row(row_id) {
                         Ok(Some(row)) => Ok(row),
                         Ok(None) => {
-                            println!("!!!!! before rebuild {:?}, id: {}", self.table, self.index_id);
                             let index = self.table.get_index_by_id(self.index_id);
-                            println!("!!!!! after rebuild {:?}, id: {}", self.table, self.index_id);
                             match self.table.rebuild_index(&index) {
                                 Ok(_) => {
                                     Err(CubeError::internal(format!(
@@ -903,17 +901,10 @@ pub trait RocksTable: BaseRocksTable + Debug + Send + Sync {
     }
 
     fn get_index_by_id(&self, secondary_index: u32) -> Box<dyn BaseRocksSecondaryIndex<Self::T>> {
-        let f = Self::indexes()
+        Self::indexes()
             .into_iter()
-            .find(|i| i.get_id() == secondary_index);
-        if f.is_none() {
-            log::error!(
-                "!!!!! secondary index {} not found for metastore table {:?}",
-                secondary_index,
-                Self::table_id()
-            );
-        }
-        f.unwrap()
+            .find(|i| i.get_id() == secondary_index)
+            .unwrap()
     }
 
     fn get_row_from_index(
@@ -1055,7 +1046,7 @@ pub trait RocksTable: BaseRocksTable + Debug + Send + Sync {
             .to_vec();
         let secondary_key_val = secondary_index.key_to_bytes(&row_key);
 
-        let index_id = Self::index_id(RocksSecondaryIndex::get_id(secondary_index));
+        let index_id = RocksSecondaryIndex::get_id(secondary_index);
         let key_len = secondary_key_hash.len();
         let key_min = RowKey::SecondaryIndex(index_id, secondary_key_hash.clone(), 0);
 
