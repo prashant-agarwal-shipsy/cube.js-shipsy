@@ -1306,6 +1306,7 @@ impl DataGCLoop {
     }
 
     async fn run(&self) {
+        log::info!("!!! GC loop started");
         loop {
             tokio::select! {
                 _ = self.stop.cancelled() => {
@@ -1347,6 +1348,7 @@ impl DataGCLoop {
                 };
 
                 log::trace!("Executing GCTask: {:?}", task);
+                log::info!("!!! Executing GCTask: {:?}", task);
 
                 match task {
                     GCTask::RemoveRemoteFile(remote_path) => {
