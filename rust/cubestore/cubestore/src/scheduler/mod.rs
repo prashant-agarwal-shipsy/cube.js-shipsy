@@ -322,10 +322,6 @@ impl SchedulerImpl {
     async fn delete_created_but_not_written_partitions(&self) -> Result<(), CubeError> {
         let all_inactive_partitions = self.meta_store.all_just_created_partitions().await?;
 
-        log::info!(
-            "!!!! orphaned man sended to GC: {}",
-            all_inactive_partitions.len()
-        );
         for partition in all_inactive_partitions.iter() {
             let deadline = Instant::now() + Duration::from_secs(self.config.import_job_timeout());
             self.gc_loop
@@ -341,10 +337,6 @@ impl SchedulerImpl {
     #[tracing::instrument(level = "trace", skip(self))]
     async fn delete_middle_man_partitions(&self) -> Result<(), CubeError> {
         let all_inactive_partitions = self.meta_store.all_inactive_middle_man_partitions().await?;
-        log::info!(
-            "!!!! middle man sended to GC: {}",
-            all_inactive_partitions.len()
-        );
 
         for partition in all_inactive_partitions.iter() {
             let deadline = Instant::now() + Duration::from_secs(self.config.import_job_timeout());
@@ -854,10 +846,12 @@ impl SchedulerImpl {
             self.meta_store
                 .delete_chunks_without_checks(ids.clone())
                 .await?;
-            let node_name = self.cluster.node_name_by_partition(&partition);
-            self.cluster
-                .free_deleted_memory_chunks(&node_name, ids)
-                .await?;
+            if let Some(partition) = partition {
+                let node_name = self.cluster.node_name_by_partition(&partition);
+                self.cluster
+                    .free_deleted_memory_chunks(&node_name, ids)
+                    .await?;
+            }
         }
 
         Ok(())
@@ -1193,7 +1187,7 @@ impl SchedulerImpl {
                 .in_memory_compaction()
                 .elapsed()
                 .ok()
-                .map_or(false, |d| d >= Duration::from_secs(2))
+                .map_or(false, |d| d >= Duration::from_secs(5))
             {
                 let job = self
                     .meta_store
@@ -1314,7 +1308,6 @@ impl DataGCLoop {
     }
 
     async fn run(&self) {
-        log::info!("!!! GC loop started");
         loop {
             tokio::select! {
                 _ = self.stop.cancelled() => {
@@ -1323,8 +1316,6 @@ impl DataGCLoop {
                 _ = Delay::new(Duration::from_secs(self.config.gc_loop_interval())) => {}
                 _ = self.task_notify.notified() => {}
             };
-
-            let mut last_apm_sending = SystemTime::now();
 
             while self
                 .pending
@@ -1346,16 +1337,6 @@ impl DataGCLoop {
                     {
                         let task = pending_lock.0.pop().unwrap();
                         pending_lock.1.remove(&task.task);
-                        if let Ok(t) = last_apm_sending.elapsed() {
-                            let server_name = self.config.server_name();
-                            let host_name = server_name.split(":").next().unwrap_or("undefined");
-                            let tags = vec![format!("cube_host:{}", host_name)];
-                            if t > Duration::from_millis(1000) {
-                                app_metrics::GC_QUEUE_SIZE
-                                    .report_with_tags(pending_lock.0.len() as i64, Some(&tags));
-                                last_apm_sending = SystemTime::now();
-                            }
-                        }
                         task.task
                     } else {
                         continue;
