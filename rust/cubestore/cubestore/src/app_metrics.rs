@@ -51,3 +51,5 @@ pub static METASTORE_INNER_WRITE_OPERATION: Histogram =
     metrics::histogram("cs.metastore.inner_write_operation.ms");
 pub static METASTORE_READ_OUT_QUEUE_OPERATION: Histogram =
     metrics::histogram("cs.metastore.read_out_queue_operation.ms");
+
+pub static GC_QUEUE_SIZE: Gauge = metrics::histogram("cs.gc.queue_size");
