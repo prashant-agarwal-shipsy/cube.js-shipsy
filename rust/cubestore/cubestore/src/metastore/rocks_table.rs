@@ -1048,7 +1048,8 @@ pub trait RocksTable: BaseRocksTable + Debug + Send + Sync {
 
         let index_id = RocksSecondaryIndex::get_id(secondary_index);
         let key_len = secondary_key_hash.len();
-        let key_min = RowKey::SecondaryIndex(index_id, secondary_key_hash.clone(), 0);
+        let key_min =
+            RowKey::SecondaryIndex(Self::index_id(index_id), secondary_key_hash.clone(), 0);
 
         let mut opts = ReadOptions::default();
         opts.set_prefix_same_as_start(true);

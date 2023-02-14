@@ -2754,7 +2754,7 @@ impl MetaStore for RocksMetaStore {
                     }
                 }
             }
-            log::info!("all inactive from middle {}", parts);
+            log::info!("!!! all inactive from middle {}", parts);
 
             Ok(result)
         })
