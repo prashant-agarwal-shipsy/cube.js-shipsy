@@ -2733,7 +2733,9 @@ impl MetaStore for RocksMetaStore {
 
             let mut result = Vec::new();
 
+            let mut parts = 0;
             for partition in orphaned_partitions {
+                parts += 1;
                 let partition = partition?;
                 if !partitions_with_chunks.contains(&partition.get_id()) {
                     if let Some(parent_partition_id) = partition.get_row().parent_partition_id() {
@@ -2752,6 +2754,7 @@ impl MetaStore for RocksMetaStore {
                     }
                 }
             }
+            log::info!("all inactive from middle {}", parts);
 
             Ok(result)
         })
