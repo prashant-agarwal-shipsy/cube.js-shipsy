@@ -5,20 +5,115 @@ category: Configuration
 menuOrder: 2
 ---
 
-Cube Cloud deployment type determines the features, scalability, and
-availability of your deployment.
+Cube Cloud offers a variety of deployment types to meet your requirements. We
+provide a generous free tier to get you started, and offer flexible paid plans
+to suit your growing business requirements.
 
-## Single Instance Deployments
+## Development Instance
 
-Single Instance deployments are designed for development use-cases only.
-If not used for over an hour, it'll take additional time to process the first request.
-Refresh Worker is active only when a Single Instance serves the workload.
+Development Instances are designed for development use-cases only. This allows
+getting set up with Cube Cloud simply and easily, and also allows you to build
+and query pre-aggregations on-demand.
 
-## Cluster Deployments
+Development Instances hibernate after 60 minutes of inactivity; the first
+request to the Development Instance after hibernation may take additional time
+to process.
 
-Cluster deployments are designed for production workload. Cluster deployment
+## Production Cluster
+
+<InfoBox>
+
+Later this year, Cube Store will replace Redis. Read more about in [on the
+blog][cube-blog-replace-redis].
+
+</InfoBox>
+
+Production Clusters are designed for production workloads. A Production Cluster
 includes the following components:
 
-- Cube API instances
-- Cube Refresh Workers
-- Redis for Cache and Queue
+- 1x Cube API instance
+- 1x Cube Store Workers
+- 1x Redis instance for caching and queueing
+
+- Autoscaling for Cube API instances (?)
+- Load balancing for multi-tenant deployments (?)
+
+## Production Multi-Cluster
+
+<InfoBox>
+
+This deployment type is only available on **Enterprise Premium** plans.
+
+</InfoBox>
+
+Cube Cloud also allows you to deploy multiple Production Clusters for an
+application. Each additional cluster is charged separately.
+
+## Additional Infrastructure
+
+Cube Cloud also allows adding additional infrastructure to your deployment to
+increase scalability and performance beyond the default limits of the Premium
+plan.
+
+### Cube Store Worker
+
+|                         | Starter | Premium | Enterprise | Enterprise Premium |
+| ----------------------- | :-----: | :-----: | :--------: | :----------------: |
+| Storage size per worker |  150GB  |  150GB  |   150GB    |       Custom       |
+
+Cube Store Workers are used to build and persist pre-aggregations. Each Worker
+has a maximum of 150GB of storage; additional Cube Store workers can be added to
+your deployment to both increase storage space and improve pre-aggregation
+performance.
+
+### Cube API Instance
+
+|                      | Starter | Premium | Enterprise | Enterprise Premium |
+| -------------------- | :-----: | :-----: | :--------: | :----------------: |
+| API requests per day | 10,000  | 200,000 | Unlimited  |     Unlimited      |
+
+Cube API instances are rate-limited, based on your subscription plan. Additional
+Cube API instances can be added to your deployment to increase the throughput of
+your queries.
+
+## Pricing
+
+Each deployment type is charged by compute units per hour.
+
+<InfoBox heading="What's a credit?">
+
+A **Compute Unit** is a virtual unit of currency representing the cost of
+running Cube Cloud infrastructure. The price of a compute unit is determined by
+the Cube Cloud plan you're subscribed to.
+
+</InfoBox>
+
+| Node Type                 | Compute Unit per hour |
+| ------------------------- | :-------------------: |
+| Cube Production Cluster   |          `4`          |
+| Cube Development Instance |          `1`          |
+| Cube Store Worker         |          `1`          |
+| Cube API Instance         |          `1`          |
+
+|                              | Starter | Premium | Enterprise | Enterprise Premium |
+| ---------------------------- | :-----: | :-----: | :--------: | :----------------: |
+| Cost per 1 Cube Compute Unit |  $XXX   |  $XXX   |    $XXX    |        $XXX        |
+
+Your pricing plan and units from the table above determine the features,
+scalability, and availability of your deployment.
+
+## Switching between deployment types
+
+To switch a deployment's type, go to the deployment's settings page and select
+from the available options:
+
+<div style="text-align: center">
+  <img
+    alt="Cube Cloud Deployment Settings page showing Development Instance, Production Cluster, and Production Multi-Cluster options"
+    src="https://ucarecdn.com/fbde6a1e-734a-4091-8edd-922dc1ee7e1c/"
+    style="border: none"
+    width="80%"
+  />
+</div>
+
+[cube-blog-replace-redis]: https://cube.dev/blog/replacing-redis-with-cube-store
