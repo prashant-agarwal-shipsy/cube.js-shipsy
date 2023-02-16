@@ -1096,17 +1096,8 @@ class ApiGateway {
           query.query = query.query.slice(0, -1);
         }
 
-        const driver = !query.external
-          ? await orchestratorApi.driverFactory(query.dataSource || 'default')
-          : await orchestratorApi.options?.externalDriverFactory();
-
-        if (!driver) {
-          throw new UserError(
-            `A driver for query not found. Please check ${
-              query.external ? 'externalDriverFactory' : 'driverFactory'
-            } config setting`
-          );
-        }
+        const driver = await orchestratorApi
+          .driverFactory(query.dataSource || 'default');
 
         driver.wrapQueryWithLimit(query);
       }
@@ -1168,8 +1159,7 @@ class ApiGateway {
 
   protected async dbSchema({ query, context, res }: {
     query: {
-      dataSource?: string;
-      external?: boolean;
+      dataSource: string;
     };
     context?: RequestContext;
     res: ResponseResultFn;
@@ -1182,9 +1172,9 @@ class ApiGateway {
         );
       }
 
-      if (!query.dataSource && !query.external) {
+      if (!query.dataSource) {
         throw new UserError(
-          'A user\'s query must contain dataSource or be an external'
+          'A user\'s query must contain dataSource.'
         );
       }
 
@@ -1192,7 +1182,7 @@ class ApiGateway {
    
       const schema = await orchestratorApi
         .getQueryOrchestrator()
-        .fetchSchema(query.dataSource, !!query.external);
+        .fetchSchema(query.dataSource);
 
       res({ data: schema });
     } catch (e) {

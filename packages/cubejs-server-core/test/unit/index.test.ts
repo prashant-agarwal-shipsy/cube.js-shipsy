@@ -423,7 +423,7 @@ describe('index.test', () => {
       dataSourcesSpy.mockClear();
     });
 
-    test.only('CompilerApi dataSources with externalDb', async () => {
+    test('CompilerApi dataSources with externalDb', async () => {
       const dataSources = await compilerApi.dataSources({
         driverFactory: jest.fn(async () => true),
         options: {
