@@ -1,4 +1,3 @@
-use crate::app_metrics;
 use crate::cluster::{pick_worker_by_ids, Cluster};
 use crate::config::ConfigObj;
 use crate::metastore::job::{Job, JobStatus, JobType};
@@ -530,26 +529,9 @@ impl SchedulerImpl {
         let all_inactive_chunks = self.meta_store.all_inactive_chunks().await?;
 
         log::info!("send {} inactive chunks to GC", all_inactive_chunks.len());
-        let (in_memory_inactive, persistent_inactive): (Vec<_>, Vec<_>) = all_inactive_chunks
+        let (_, persistent_inactive): (Vec<_>, Vec<_>) = all_inactive_chunks
             .iter()
             .partition(|c| c.get_row().in_memory());
-
-        /* if !in_memory_inactive.is_empty() {
-            let seconds = self.config.in_memory_not_used_timeout();
-            let deadline = Instant::now() + Duration::from_secs(seconds);
-            let ids = in_memory_inactive
-                .iter()
-                .map(|c| c.get_id().clone())
-                .collect::<Vec<_>>();
-            for part in ids.as_slice().chunks(10000) {
-                self.gc_loop
-                    .send(GCTimedTask {
-                        deadline,
-                        task: GCTask::DeleteChunks(part.iter().cloned().collect_vec()),
-                    })
-                    .await?;
-            }
-        } */
 
         if !persistent_inactive.is_empty() {
             let seconds = self.config.not_used_timeout();
@@ -928,7 +910,7 @@ impl SchedulerImpl {
         self: &Arc<Self>,
         chunks: Vec<IdRow<Chunk>>,
     ) -> Result<(), CubeError> {
-        let (in_memory_inactive, persistent_inactive): (Vec<_>, Vec<_>) = chunks
+        let (_, persistent_inactive): (Vec<_>, Vec<_>) = chunks
             .into_iter()
             .filter(|c| !c.get_row().active())
             .partition(|c| c.get_row().in_memory());
