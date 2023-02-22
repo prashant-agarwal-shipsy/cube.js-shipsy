@@ -464,15 +464,10 @@ impl SchedulerImpl {
             "schedule all pending compaction {}",
             partition_compaction_candidates_id.len()
         );
-        /* let mut nodes_for_in_memory_compactions = HashSet::new();
         for p in partition_compaction_candidates_id {
             let node_name = self.cluster.node_name_by_partition(&p);
-            nodes_for_in_memory_compactions.insert(node_name);
             self.schedule_compaction_if_needed(&p).await?;
         }
-        for node in nodes_for_in_memory_compactions {
-            self.schedule_node_in_memory_compaction(node).await?;
-        } */
         Ok(())
     }
     #[tracing::instrument(level = "trace", skip(self))]
