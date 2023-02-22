@@ -29,6 +29,26 @@ export interface QueryOrchestratorOptions {
   skipExternalCacheAndQueue?: boolean;
 }
 
+function detectQueueAndCacheDriver(options: QueryOrchestratorOptions): CacheAndQueryDriverType {
+  if (options.cacheAndQueueDriver) {
+    return options.cacheAndQueueDriver;
+  }
+
+  if (getEnv('cacheAndQueueDriver')) {
+    return getEnv('cacheAndQueueDriver');
+  }
+
+  if (getEnv('redisUrl') || getEnv('redisUseIORedis')) {
+    return 'redis';
+  }
+
+  if (getEnv('nodeEnv') === 'production') {
+    return 'cubestore';
+  }
+
+  return 'memory';
+}
+
 export class QueryOrchestrator {
   protected readonly queryCache: QueryCache;
 
@@ -49,15 +69,9 @@ export class QueryOrchestrator {
     options: QueryOrchestratorOptions = {}
   ) {
     this.rollupOnlyMode = options.rollupOnlyMode;
+    const cacheAndQueueDriver = detectQueueAndCacheDriver(options);
 
-    const cacheAndQueueDriver = options.cacheAndQueueDriver || getEnv('cacheAndQueueDriver') || (
-      (getEnv('nodeEnv') === 'production' || getEnv('redisUrl') || getEnv('redisUseIORedis'))
-        ? 'redis'
-        : 'memory'
-    );
-    this.cacheAndQueueDriver = cacheAndQueueDriver;
-
-    if (!['redis', 'memory', 'cubestore'].includes(cacheAndQueueDriver)) {
+    if (!['redis', 'memory', 'cubestore'].includes(this.cacheAndQueueDriver)) {
       throw new Error('Only \'redis\', \'memory\' or \'cubestore\' are supported for cacheAndQueueDriver option');
     }
 
@@ -65,6 +79,7 @@ export class QueryOrchestrator {
 
     const redisPool = cacheAndQueueDriver === 'redis' ? new RedisPool(options.redisPoolOptions) : undefined;
     this.redisPool = redisPool;
+    this.cacheAndQueueDriver = cacheAndQueueDriver;
 
     const cubeStoreDriverFactory = cacheAndQueueDriver === 'cubestore' ? async () => {
       const externalDriver = await externalDriverFactory();
