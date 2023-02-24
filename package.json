@@ -1,7 +1,7 @@
 {
-  "name": "cubejs",
-  "version": "0.1.0",
-  "description": "",
+  "name": "cubejs-shipsy",
+  "version": "0.2.0",
+  "description": "<p align=\"center\">   <a href=\"https://cube.dev\"><img src=\"https://raw.githubusercontent.com/cube-js/cube.js/master/docs/content/cube-logo.png\" alt=\"Cube — Headless Business Intelligence\" width=\"300px\"></a> </p>",
   "private": true,
   "workspaces": {
     "packages": [
@@ -73,7 +73,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/cube-js/cube.js.git"
+    "url": "git+https://github.com/prashant-agarwal-shipsy/cube.js-shipsy.git"
   },
   "resolutions": {
     "@types/node": "^12",
@@ -81,5 +81,14 @@
     "rc-tree": "4.1.5",
     "testcontainers": "7.12.1"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/prashant-agarwal-shipsy/cube.js-shipsy/issues"
+  },
+  "homepage": "https://github.com/prashant-agarwal-shipsy/cube.js-shipsy#readme",
+  "main": "rollup.config.js",
+  "directories": {
+    "doc": "docs",
+    "example": "examples"
+  }
 }
