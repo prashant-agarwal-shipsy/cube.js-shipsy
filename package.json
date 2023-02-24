@@ -2,7 +2,6 @@
   "name": "cubejs-shipsy",
   "version": "0.2.0",
   "description": "<p align=\"center\">   <a href=\"https://cube.dev\"><img src=\"https://raw.githubusercontent.com/cube-js/cube.js/master/docs/content/cube-logo.png\" alt=\"Cube — Headless Business Intelligence\" width=\"300px\"></a> </p>",
-  "private": true,
   "workspaces": {
     "packages": [
       "rust/*",
@@ -76,7 +75,7 @@
     "url": "git+https://github.com/prashant-agarwal-shipsy/cube.js-shipsy.git"
   },
   "resolutions": {
-    "@types/node": "^12",
+    "@types/node": "^16",
     "@types/ramda": "0.27.40",
     "rc-tree": "4.1.5",
     "testcontainers": "7.12.1"
